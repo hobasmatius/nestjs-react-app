@@ -1,0 +1,27 @@
+{
+    "name": "SimpleApp",
+    "description": "Hobas Matius' simple application",
+    "repository": "https://github.com/hobasmatius/simpleapp",
+    "success_url": "/",
+    "scripts":{
+      "predeploy": "npm install && npm run build"
+    },
+    "env": {
+      "NODE_ENV": {
+        "description": "Environment",
+        "value": "prod"
+      }
+    },
+    "formation": {
+      "web": {
+        "quantity": 1
+      }
+    },
+    "image": "heroku/nodejs",
+    "addons": ["heroku-postgresql"],
+    "buildpacks": [
+      {
+        "url": "heroku/nodejs"
+      }
+    ]
+  }
