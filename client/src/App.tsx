@@ -1,9 +1,8 @@
-import React from 'react';
-import logo from './logo.svg';
 import './App.css';
 import SignUpButton from './components/SignUpButton';
 import LoginButton from './components/LoginButton';
 import LogoutButton from './components/LogoutButton';
+import SendVerificationEmailButton from './components/SendVerificationEmailButton';
 
 function App() {
   return (
@@ -11,6 +10,7 @@ function App() {
       <SignUpButton />
       <LoginButton />
       <LogoutButton />
+      <SendVerificationEmailButton />
     </div>
   );
 }
