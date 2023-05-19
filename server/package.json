@@ -61,7 +61,7 @@
     "typescript": "^4.7.4"
   },
   "engines": { 
-    "node": "19.6.0" 
+    "node": "17.9.1" 
   },
   "jest": {
     "moduleFileExtensions": [
