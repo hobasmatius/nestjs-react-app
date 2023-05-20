@@ -1,6 +1,5 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { firstValueFrom, map } from 'rxjs';
 
 class Auth0AccessToken {
@@ -15,8 +14,7 @@ const TOKEN_LIFETIME_IN_HOURS = 23;
 @Injectable()
 export class Auth0Service {
     constructor(
-        private readonly httpService: HttpService,
-        private readonly configService: ConfigService
+        private readonly httpService: HttpService
     ) {}
 
     getAccessToken(): Promise<Auth0AccessToken> {
@@ -24,13 +22,13 @@ export class Auth0Service {
             return Promise.resolve(activeToken);
         }
 
-        const auth0BaseUrl = this.configService.get('AUTH0_BASE_URL');
+        const auth0BaseUrl = process.env.AUTH0_BASE_URL;
         const requestHeaders = {
             'content-type': 'application/json'
         }
         const requestBody = {
-            'client_id': this.configService.get('AUTH0_M2M_CLIENT_ID'),
-            'client_secret': this.configService.get('AUTH0_M2M_CLIENT_SECRET'),
+            'client_id': process.env.AUTH0_M2M_CLIENT_ID,
+            'client_secret': process.env.AUTH0_M2M_CLIENT_SECRET,
             'audience': auth0BaseUrl + "/api/v2/",
             'grant_type': 'client_credentials'
         }
@@ -54,7 +52,7 @@ export class Auth0Service {
                 'content-type': 'application/json',
                 'Authorization': `${accessToken.token_type} ${accessToken.access_token}`
             }
-            const url = this.configService.get('AUTH0_BASE_URL') + "/api/v2/jobs/verification-email";
+            const url = process.env.AUTH0_BASE_URL + "/api/v2/jobs/verification-email";
             
             firstValueFrom(
                 this.httpService.post(url, { user_id: userId }, { headers: requestHeaders }).pipe(map((response) => response))

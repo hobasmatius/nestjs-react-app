@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LoginDto } from 'src/dto/login.dto';
 import { User } from 'src/entity';
@@ -9,6 +9,7 @@ import { Auth0Service } from 'src/thirdparty/service/auth0/auth0.service';
 import { convertDateToUTC } from 'src/util/util';
 import { plainToClass } from 'class-transformer';
 import { UserDto } from 'src/dto/user.dto';
+import { BusinessException } from 'src/exception/business.exception';
 
 @Injectable()
 export class UserService {
@@ -21,29 +22,30 @@ export class UserService {
         return plainToClass(UserDto, this.userRepository.find());
     }
 
-    async findUserByEmail(email: string) {
-        const user = await this.userRepository.findOneBy({ email: email });
-        return plainToClass(UserDto, user);
+    findByEmail(email: string) {
+        return plainToClass(UserDto, this.userRepository.findOneBy({ email: email }));
     }
 
     async findLoginUser(loginDto: LoginDto) {
         const user = await this.userRepository.findOneBy({ email: loginDto.email });
-        const isValid = user && user.password == loginDto.password;
+        const isValid = (user !== null && user.password === loginDto.password);
         
         if (isValid) {
             user.loginCount += 1;
             user.lastSessionAt = convertDateToUTC(new Date());
             this.userRepository.save(user);
-        }
 
-        return isValid ? plainToClass(UserDto, user) : null;
+            return plainToClass(UserDto, user);
+        } else {
+            throw new BusinessException('Wrong email or password', HttpStatus.FORBIDDEN);
+        }
     }
 
     async create(createUserDto: CreateUserDto) {
-        const user = await this.findUserByEmail(createUserDto.email);
+        const user = await this.findByEmail(createUserDto.email);
 
         if (user) {
-            return null;
+            throw new BusinessException('User already registered', HttpStatus.OK);
         } else {
             const newUser = this.userRepository.create(createUserDto);
             return plainToClass(UserDto, this.userRepository.save(newUser));
@@ -56,14 +58,14 @@ export class UserService {
             if (updateUserDto.name) {
                 user.name = updateUserDto.name;
             }
-            if (updateUserDto.isEmailVerified) {
+            if (updateUserDto.isEmailVerified !== undefined) {
                 user.isEmailVerified = updateUserDto.isEmailVerified;
             }
 
             return plainToClass(UserDto, this.userRepository.save(user));
+        } else {
+            throw new BusinessException('Failed to update, the user could not be found', HttpStatus.NOT_FOUND);
         }
-
-        return null;
     }
 
     sendVerificationEmail(userId: string) {

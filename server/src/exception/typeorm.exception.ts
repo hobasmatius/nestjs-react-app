@@ -1,4 +1,4 @@
-import { ArgumentsHost, Catch, ExceptionFilter, HttpStatus, Logger } from '@nestjs/common';
+import { ArgumentsHost, Catch, ExceptionFilter, Logger } from '@nestjs/common';
 import { TypeORMError } from 'typeorm';
 import { Request, Response } from 'express';
 
@@ -8,11 +8,11 @@ export class TypeOrmExceptionFilter implements ExceptionFilter {
         const ctx = host.switchToHttp();
         const request = ctx.getRequest<Request>();
         const response = ctx.getResponse<Response>();
-        const httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+        const httpStatus = response.statusCode;
         const timestamp = new Date().getTime();
         const errorResponse = {
-            statusCode: httpStatus.toString(),
-            message: 'Unable to process your request',
+            statusCode: httpStatus,
+            message: 'Unable to process your request, please contact our support by providing the Request ID',
             requestId: timestamp.toString()
         }
 

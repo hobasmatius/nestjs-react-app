@@ -12,7 +12,7 @@ import { join } from 'path';
   imports: [
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'build'),
-      exclude: ['/api/v1/*']
+      exclude: ['/api/(.*)'],
     }),
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({

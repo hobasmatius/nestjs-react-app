@@ -1,8 +1,7 @@
-import { Body, Controller, Get, Param, Patch, Post, Put, Query, UseFilters, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Query, UseFilters, UseInterceptors } from '@nestjs/common';
 import { UserService } from 'src/user/service/user/user.service';
 import { TransformInterceptor } from 'src/transform.interceptor';
 import { LoginDto } from 'src/dto/login.dto';
-import { LoginException } from 'src/exception/login.exception';
 import { TypeOrmExceptionFilter } from 'src/exception/typeorm.exception';
 import { UpdateUserDto } from 'src/dto/updateuser.dto';
 import { CreateUserDto } from 'src/dto/createuser.dto';
@@ -20,54 +19,34 @@ export class UserController {
 
     @Get(':email')
     @UseInterceptors(TransformInterceptor)
-    async findUserByEmail(
+    findUserByEmail(
         @Param('email') email: string
     ) {
-        const user = await this.userService.findUserByEmail(email);
-        if (user) {
-            return user;
-        } else {
-            return { message: 'User not found' };
-        }
+        return this.userService.findByEmail(email);
     }
 
     @Post('login')
     @UseInterceptors(TransformInterceptor)
-    async login(
+    login(
         @Body() loginDto: LoginDto
     ) {
-        const user = await this.userService.findLoginUser(loginDto);
-        if (user) {
-            return user;
-        } else {
-            throw new LoginException;
-        }
+        return this.userService.findLoginUser(loginDto);
     }
 
-    @Put('create')
+    @Post('create')
     @UseInterceptors(TransformInterceptor)
-    async create(
+    create(
         @Body() createUserDto: CreateUserDto
     ) {
-        const user = await this.userService.create(createUserDto);
-        if (user) {
-            return user;
-        } else {
-            return { message: 'User already registered' };
-        }
+        return this.userService.create(createUserDto);
     }
 
     @Patch('update')
     @UseInterceptors(TransformInterceptor)
-    async update(
+    update(
         @Body() updateUserDto: UpdateUserDto
     ) {
-        const updatedUser = await this.userService.update(updateUserDto);
-        if (updatedUser) {
-            return updatedUser;
-        } else {
-            return { message: 'User not found' };
-        }
+        return this.userService.update(updateUserDto);
     }
 
     @Post('send-verification-email')

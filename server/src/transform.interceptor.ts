@@ -10,7 +10,7 @@ import {
   export interface Response<T> {
     statusCode: number;
     message: string;
-    data: T;
+    data?: T;
   }
   
   @Injectable()
@@ -24,7 +24,7 @@ import {
       return next.handle().pipe(
         map((data) => ({
           statusCode: context.switchToHttp().getResponse().statusCode,
-          message: data.message || '',
+          message: data?.message || '',
           data: data
         }))
       );
