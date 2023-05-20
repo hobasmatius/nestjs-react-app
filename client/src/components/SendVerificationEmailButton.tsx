@@ -10,7 +10,7 @@ const SendVerificationEmailButton = () => {
     }
 
     const handleSendVerificationEmail = (auth0UserId: string) => {
-        axios.post(`${process.env.PUBLIC_URL} /api/v1/users/send-verification-email`, null, { params }).then((data) => {
+        axios.post(`${process.env.PUBLIC_URL}/api/v1/users/send-verification-email`, null, { params }).then((data) => {
             alert('Email sent');
         }).catch((err) => {
             alert('Failed to send verification email due to ' + err);
@@ -19,7 +19,7 @@ const SendVerificationEmailButton = () => {
 
     return (
         <>{
-            isEmailVerified == false && isAuthenticated && (<button onClick={() => handleSendVerificationEmail(auth0UserId)}>Resend Verification Email</button>)
+            !isEmailVerified && isAuthenticated && (<button onClick={() => handleSendVerificationEmail(auth0UserId)}>Resend Verification Email</button>)
         }</>
     )
 }
