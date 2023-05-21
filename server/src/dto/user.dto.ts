@@ -4,6 +4,9 @@ import { IsEmail, IsNotEmpty } from "class-validator";
 @Exclude()
 export class UserDto {
     @Expose()
+    id: number;
+
+    @Expose()
     @IsNotEmpty()
     @IsEmail()
     email: string;
