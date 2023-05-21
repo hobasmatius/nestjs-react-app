@@ -34,7 +34,7 @@ export class User {
 
   @Column({
     nullable: false,
-    default: new Date(),
+    default: () => "CURRENT_TIMESTAMP",
     name: 'sign_up_at'
   })
   signUpAt: Date;
@@ -48,7 +48,7 @@ export class User {
 
   @Column({
     nullable: false,
-    default: new Date(),
+    default: () => "CURRENT_TIMESTAMP",
     name: 'last_session_at'
   })
   lastSessionAt: Date;

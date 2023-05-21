@@ -27,26 +27,26 @@ export class UserController {
 
     @Post('login')
     @UseInterceptors(TransformInterceptor)
-    login(
+    async login(
         @Body() loginDto: LoginDto
     ) {
-        return this.userService.findLoginUser(loginDto);
+        return await this.userService.findLoginUser(loginDto);
     }
 
     @Post('create')
     @UseInterceptors(TransformInterceptor)
-    create(
+    async create(
         @Body() createUserDto: CreateUserDto
     ) {
-        return this.userService.create(createUserDto);
+        return await this.userService.create(createUserDto);
     }
 
     @Patch('update')
     @UseInterceptors(TransformInterceptor)
-    update(
+    async update(
         @Body() updateUserDto: UpdateUserDto
     ) {
-        return this.userService.update(updateUserDto);
+        return await this.userService.update(updateUserDto);
     }
 
     @Post('send-verification-email')
