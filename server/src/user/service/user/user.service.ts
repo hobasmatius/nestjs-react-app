@@ -42,7 +42,7 @@ export class UserService {
     }
 
     async create(createUserDto: CreateUserDto) {
-        const user = await this.findByEmail(createUserDto.email);
+        const user = await this.userRepository.findOneBy({ email: createUserDto.email });
 
         if (user) {
             throw new BusinessException('User already registered', HttpStatus.OK);
