@@ -4,6 +4,7 @@ import { TransformInterceptor } from 'src/transform.interceptor';
 import { TypeOrmExceptionFilter } from 'src/exception/typeorm.exception';
 import { UpdateUserDto } from 'src/dto/updateuser.dto';
 import { CreateUserDto } from 'src/dto/createuser.dto';
+import { LoginDto } from 'src/dto/login.dto';
 
 @Controller('api/v1/users')
 @UseFilters(TypeOrmExceptionFilter)
@@ -27,9 +28,9 @@ export class UserController {
     @Post('login')
     @UseInterceptors(TransformInterceptor)
     handlePostLogin(
-        @Param('email') email: string
+        @Body() loginDto: LoginDto
     ) {
-        this.userService.captureSuccessfulLoginActivity(email);
+        this.userService.captureSuccessfulLoginActivity(loginDto.email);
     }
 
     @Post('create')
