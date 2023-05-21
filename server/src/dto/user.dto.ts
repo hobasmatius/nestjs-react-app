@@ -7,6 +7,9 @@ export class UserDto {
     id: number;
 
     @Expose()
+    password: string;
+
+    @Expose()
     @IsNotEmpty()
     @IsEmail()
     email: string;

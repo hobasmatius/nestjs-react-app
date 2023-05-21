@@ -1,7 +1,6 @@
 import { Body, Controller, Get, Param, Patch, Post, Query, UseFilters, UseInterceptors } from '@nestjs/common';
 import { UserService } from 'src/user/service/user/user.service';
 import { TransformInterceptor } from 'src/transform.interceptor';
-import { LoginDto } from 'src/dto/login.dto';
 import { TypeOrmExceptionFilter } from 'src/exception/typeorm.exception';
 import { UpdateUserDto } from 'src/dto/updateuser.dto';
 import { CreateUserDto } from 'src/dto/createuser.dto';
@@ -27,10 +26,10 @@ export class UserController {
 
     @Post('login')
     @UseInterceptors(TransformInterceptor)
-    async login(
-        @Body() loginDto: LoginDto
+    handlePostLogin(
+        @Param('email') email: string
     ) {
-        return await this.userService.findLoginUser(loginDto);
+        this.userService.captureSuccessfulLoginActivity(email);
     }
 
     @Post('create')

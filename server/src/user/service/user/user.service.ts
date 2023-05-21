@@ -1,6 +1,5 @@
-import { HttpStatus, Injectable, Logger } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LoginDto } from 'src/dto/login.dto';
 import { User } from 'src/entity';
 import { Repository } from 'typeorm';
 import { UpdateUserDto } from 'src/dto/updateuser.dto';
@@ -18,32 +17,27 @@ export class UserService {
         private readonly auth0Service: Auth0Service
     ) {}
 
-    findAll() {
+    async findAll() {
         return plainToClass(UserDto, this.userRepository.find());
     }
 
-    findByEmail(email: string) {
+    async findByEmail(email: string) {
         return plainToClass(UserDto, this.userRepository.findOneBy({ email: email }));
     }
 
-    async findLoginUser(loginDto: LoginDto) {
-        const user = await this.userRepository.findOneBy({ email: loginDto.email });
-        const isValid = (user !== null && user.password === loginDto.password);
-        
-        if (isValid) {
-            user.loginCount += 1;
-            user.lastSessionAt = convertDateToUTC(new Date());
-            this.userRepository.save(user);
-
-            return plainToClass(UserDto, user);
-        } else {
-            throw new BusinessException('Wrong email or password', HttpStatus.FORBIDDEN);
-        }
+    captureSuccessfulLoginActivity(email: string) {
+        this.findByEmail(email).then((user) => {
+            if (user) {
+                user.loginCount += 1;
+                user.lastSessionAt = convertDateToUTC(new Date());
+                this.userRepository.save(user);
+            }
+        });
     }
 
     async create(createUserDto: CreateUserDto) {
-        const user = await this.userRepository.findOneBy({ email: createUserDto.email });
-        Logger.log(`${createUserDto.email} ${createUserDto.password}`);
+        const user = await this.findByEmail(createUserDto.email);
+        
         if (user !== null) {
             throw new BusinessException('User already registered', HttpStatus.OK);
         } else {
@@ -53,7 +47,7 @@ export class UserService {
     }
 
     async update(updateUserDto: UpdateUserDto) {
-        const user = await this.userRepository.findOneBy({ email: updateUserDto.email });
+        const user = await this.findByEmail(updateUserDto.email);
         
         if (user !== null) {
             if (updateUserDto.name) {
