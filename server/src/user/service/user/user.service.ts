@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LoginDto } from 'src/dto/login.dto';
 import { User } from 'src/entity';
@@ -43,7 +43,7 @@ export class UserService {
 
     async create(createUserDto: CreateUserDto) {
         const user = await this.userRepository.findOneBy({ email: createUserDto.email });
-
+        Logger.log(`${createUserDto.email} ${createUserDto.password}`);
         if (user !== null) {
             throw new BusinessException('User already registered', HttpStatus.OK);
         } else {
@@ -54,6 +54,7 @@ export class UserService {
 
     async update(updateUserDto: UpdateUserDto) {
         const user = await this.userRepository.findOneBy({ email: updateUserDto.email });
+        
         if (user !== null) {
             if (updateUserDto.name) {
                 user.name = updateUserDto.name;
