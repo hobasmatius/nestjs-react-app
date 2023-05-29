@@ -25,7 +25,7 @@ export class UserService {
         return plainToClass(UserDto, this.userRepository.findOneBy({ email: email }));
     }
 
-    captureSuccessfulLoginActivity(email: string) {
+    updateSession(email: string) {
         this.findByEmail(email).then((user) => {
             if (user) {
                 user.loginCount += 1;
@@ -46,8 +46,8 @@ export class UserService {
         }
     }
 
-    async update(updateUserDto: UpdateUserDto) {
-        const user = await this.findByEmail(updateUserDto.email);
+    async update(email: string, updateUserDto: UpdateUserDto) {
+        const user = await this.findByEmail(email);
         
         if (user !== null) {
             if (updateUserDto.name) {

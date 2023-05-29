@@ -1,10 +1,9 @@
-import { Body, Controller, Get, Param, Patch, Post, Query, UseFilters, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Param, Put, Post, Query, UseFilters, UseInterceptors } from '@nestjs/common';
 import { UserService } from 'src/user/service/user/user.service';
 import { TransformInterceptor } from 'src/transform.interceptor';
 import { TypeOrmExceptionFilter } from 'src/exception/typeorm.exception';
 import { UpdateUserDto } from 'src/dto/updateuser.dto';
 import { CreateUserDto } from 'src/dto/createuser.dto';
-import { LoginDto } from 'src/dto/login.dto';
 
 @Controller('api/v1/users')
 @UseFilters(TypeOrmExceptionFilter)
@@ -25,15 +24,15 @@ export class UserController {
         return this.userService.findByEmail(email);
     }
 
-    @Post('login')
+    @Put(':email/session')
     @UseInterceptors(TransformInterceptor)
-    handlePostLogin(
-        @Body() loginDto: LoginDto
+    updateSession(
+        @Param('email') email: string
     ) {
-        this.userService.captureSuccessfulLoginActivity(loginDto.email);
+        this.userService.updateSession(email);
     }
 
-    @Post('create')
+    @Post()
     @UseInterceptors(TransformInterceptor)
     async create(
         @Body() createUserDto: CreateUserDto
@@ -41,12 +40,13 @@ export class UserController {
         return await this.userService.create(createUserDto);
     }
 
-    @Patch('update')
+    @Put(':email')
     @UseInterceptors(TransformInterceptor)
     async update(
+        @Param('email') email: string,
         @Body() updateUserDto: UpdateUserDto
     ) {
-        return await this.userService.update(updateUserDto);
+        return await this.userService.update(email, updateUserDto);
     }
 
     @Post('send-verification-email')
